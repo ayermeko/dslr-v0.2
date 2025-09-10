@@ -1,20 +1,78 @@
 import matplotlib.pyplot as plt
-from .operations import filter_numeric_values
+import numpy as np
+from .operations import filter_numeric_values, is_nan
 
-def histo(df):
+def histo(df, subject="Care of Magical Creatures", bins=30):
     """
-    Plot histograms for all numeric columns in the custom DataFrame
+    Create a histogram of scores for a subject, separated by house
+    
+    Args:
+        df: DataFrame containing the data
+        subject: Subject to plot (column name)
+        bins: Number of bins for the histogram
     """
-    for col_name, col in df.items():
-        # Filter numeric values (ignore NaNs)
-        values = filter_numeric_values(col)
-        if not values:
-            continue  # Skip non-numeric or empty columns
-
-        plt.figure(figsize=(6, 4))
-        plt.hist(values, bins=20, edgecolor="black")
-        plt.title(f"Histogram of {col_name}")
-        plt.xlabel(col_name)
-        plt.ylabel("Frequency")
-        plt.grid(axis="y", alpha=0.5)
-        plt.show()
+    houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
+    colors = {
+        "Gryffindor": "darkred",
+        "Hufflepuff": "gold",
+        "Ravenclaw": "royalblue",
+        "Slytherin": "darkgreen"
+    }
+    
+    # Validate column names
+    if "Hogwarts House" not in df.columns:
+        raise ValueError("DataFrame must contain 'Hogwarts House' column")
+    if subject not in df.columns:
+        raise ValueError(f"DataFrame does not contain column '{subject}'")
+    
+    # Collect scores by house
+    house_scores = {house: [] for house in houses}
+    for i in range(df.shape[0]):
+        house = df["Hogwarts House"][i]
+        score = df[subject][i]
+        
+        # Check if both house and score are valid
+        if isinstance(house, str) and house in houses and isinstance(score, (int, float)) and not is_nan(score):
+            house_scores[house].append(score)
+    
+    # Check if we have data to plot
+    if all(len(scores) == 0 for scores in house_scores.values()):
+        print(f"No valid data found for subject '{subject}'")
+        return
+    
+    # Plot histograms for all houses together
+    plt.figure(figsize=(10, 6))
+    
+    # Determine common x-axis range for better comparison
+    all_scores = []
+    for scores in house_scores.values():
+        all_scores.extend(scores)
+    
+    if all_scores:
+        # Create common bins for all histograms
+        min_score = min(all_scores)
+        max_score = max(all_scores)
+        bin_edges = np.linspace(min_score, max_score, bins+1)
+        
+        for house in houses:
+            if house_scores[house]:  # Only plot if there are scores
+                plt.hist(
+                    house_scores[house],
+                    bins=bin_edges,
+                    alpha=0.6,
+                    label=f"{house} (n={len(house_scores[house])})",
+                    color=colors[house],
+                    edgecolor="black"
+                )
+    
+    plt.title(f"Distribution of {subject} Scores by House")
+    plt.xlabel("Scores")
+    plt.ylabel("Number of Students")
+    plt.legend()
+    plt.grid(alpha=0.3)
+    plt.tight_layout()
+    
+    # Save to file and show
+    plt.savefig('histogram.png')
+    print(f"Histogram saved to 'histogram.png'")
+    plt.show()

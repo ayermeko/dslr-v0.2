@@ -41,11 +41,17 @@ def read_csv(filename: str):
         for row in reader:
             processed_row = []
             for value in row:
-                try:
-                    value = float(value)
-                except ValueError:
-                    value = np.nan
-                processed_row.append(value)
+                if value.strip() == '':
+                    # Handle empty cells
+                    processed_row.append(np.nan)
+                else:
+                    try:
+                        # Try to convert to float (for numeric columns)
+                        processed_value = float(value)
+                        processed_row.append(processed_value)
+                    except ValueError:
+                        # For non-numeric data (like house names), keep as string
+                        processed_row.append(value)
             dataset.append(processed_row)
     return DataFrame(dataset, header)
 
