@@ -175,5 +175,5 @@ def describe(dataset):
         }
     
     formatted_output = format_results(results)
-    print(formatted_output)
+    print(formatted_output, end="")
     return results
