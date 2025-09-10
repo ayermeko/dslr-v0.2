@@ -153,13 +153,26 @@ def is_nan(val):
         return math.isnan(val)
     return False
 
+def filter_numeric_values(column):
+    """
+    Filter a column to keep only numeric values (int, float) and remove NaN values
+    
+    Args:
+        column: A sequence of values to filter
+        
+    Returns:
+        List of numeric values with NaN values removed
+    """
+    return [val for val in column if isinstance(val, (int, float)) and not is_nan(val)]
+
 def describe(dataset):
     """Generate descriptive statistics for the dataset"""
     
     results = {}
     for col_name, col in dataset.items():
-        values = [val for val in col if isinstance(val, (int, float)) and not is_nan(val)]
-        
+        # Filter number values, ignore NaN
+        values = filter_numeric_values(col)
+        # Skip in case of empty column
         if not values:
             continue
             
