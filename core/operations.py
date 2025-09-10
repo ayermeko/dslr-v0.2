@@ -132,7 +132,7 @@ def format_results(results):
     
     output = " ".ljust(length_stat)
     for col in col_names:
-        display_name = col[:7] + "..." if len(col) > 9 else col
+        display_name = col[:10] + "." if len(col) > 10 else col
         output += f"{display_name}".rjust(length_cal)
     output += "\n"
     
