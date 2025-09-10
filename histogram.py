@@ -4,11 +4,6 @@ from core.operations import read_csv
 def main():
     df = read_csv("dataset_train.csv")
     
-    # Check the first few values to confirm house names are preserved
-    print("First 5 house values:")
-    for i in range(5):
-        print(f"  {i}: {df['Hogwarts House'][i]}")
-    
     # Show counts of each house
     houses = {}
     for i in range(df.shape[0]):

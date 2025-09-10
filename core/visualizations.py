@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .operations import filter_numeric_values, is_nan
+from .operations import filter_numeric_values, is_nan, min_max
 
 def histo(df, subject="Care of Magical Creatures", bins=30):
     """
@@ -50,8 +50,8 @@ def histo(df, subject="Care of Magical Creatures", bins=30):
     
     if all_scores:
         # Create common bins for all histograms
-        min_score = min(all_scores)
-        max_score = max(all_scores)
+        min_score = min_max(all_scores, find="min")
+        max_score = min_max(all_scores, find="max")
         bin_edges = np.linspace(min_score, max_score, bins+1)
         
         for house in houses:
