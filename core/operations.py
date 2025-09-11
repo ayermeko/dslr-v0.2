@@ -14,6 +14,7 @@ class DataFrame:
     def __init__(self, data, columns=None):
         self.data = np.array(data, dtype=object)
         self.columns = columns
+
         
     def __getitem__(self, key):
         """Allow column access with df['column_name']"""
@@ -132,7 +133,7 @@ def percentile(values, p):
     fraction = idx - lower_idx
     return lower_val + fraction * (upper_val - lower_val)
 
-def format_results(results):
+def format_results(results, dataset):
     """Format results as a table"""
     if not results:
         return "No numerical features found."
@@ -185,6 +186,6 @@ def describe(dataset):
             "Max": min_max(values, find="max")
         }
     
-    formatted_output = format_results(results)
+    formatted_output = format_results(results, dataset)
     print(formatted_output, end="")
     return results
