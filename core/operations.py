@@ -1,11 +1,16 @@
 import numpy as np
 import csv
 import os
-import math
+from dataclasses import dataclass, field
+from typing import Any, Optional, List
 
+@dataclass
 class DataFrame:
     """A simple DataFrame-like class without pandas dependency"""
     
+    data: Any
+    columns: Optional[List[str]] = field(default_factory=list)
+
     def __init__(self, data, columns=None):
         self.data = np.array(data, dtype=object)
         self.columns = columns
@@ -152,24 +157,11 @@ def format_results(results):
         
     return output
 
-
-def is_nan(val):
-    """Safely check if a value is NaN"""
-    if isinstance(val, float):
-        return math.isnan(val)
-    return False
-
 def filter_numeric_values(column):
     """
     Filter a column to keep only numeric values (int, float) and remove NaN values
-    
-    Args:
-        column: A sequence of values to filter
-        
-    Returns:
-        List of numeric values with NaN values removed
     """
-    return [val for val in column if isinstance(val, (int, float)) and not is_nan(val)]
+    return [val for val in column if isinstance(val, (int, float)) and not np.isnan(val)]
 
 def describe(dataset):
     """Generate descriptive statistics for the dataset"""
@@ -183,7 +175,7 @@ def describe(dataset):
             continue
             
         results[col_name] = {
-            "Count": float(len(values)),  # Convert to float for consistent formatting
+            "Count": float(len(values)),
             "Mean": mean(values),
             "Std": std(values),
             "Min": min_max(values, find="min"),
