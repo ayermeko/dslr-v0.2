@@ -1,6 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .operations import filter_numeric_values, is_nan, min_max
+from .operations import filter_numeric_values, min_max
+from enum import Enum
+
+class Colors(Enum):
+    DARK = "#000000"
+    RED = "#570101"
+    YELLOW = "#FFFF0000"
+    BLUE = "#34B5BC8A"
+    GREEN = "#4FC714FF"
+
 
 def histo(df, subject="Care of Magical Creatures", bins=30):
     """
@@ -13,12 +22,12 @@ def histo(df, subject="Care of Magical Creatures", bins=30):
     """
     houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
     colors = {
-        "Gryffindor": "darkred",
-        "Hufflepuff": "gold",
-        "Ravenclaw": "royalblue",
-        "Slytherin": "darkgreen"
+        "Gryffindor": Colors.RED.value,
+        "Hufflepuff": Colors.YELLOW.value,
+        "Ravenclaw": Colors.BLUE.value,
+        "Slytherin": Colors.GREEN.value
     }
-    
+
     # Validate column names
     if "Hogwarts House" not in df.columns:
         raise ValueError("DataFrame must contain 'Hogwarts House' column")
@@ -32,7 +41,7 @@ def histo(df, subject="Care of Magical Creatures", bins=30):
         score = df[subject][i]
         
         # Check if both house and score are valid
-        if isinstance(house, str) and house in houses and isinstance(score, (int, float)) and not is_nan(score):
+        if isinstance(house, str) and house in houses and isinstance(score, (int, float)) and not np.isnan(score):
             house_scores[house].append(score)
     
     # Check if we have data to plot
@@ -62,7 +71,7 @@ def histo(df, subject="Care of Magical Creatures", bins=30):
                     alpha=0.6,
                     label=f"{house} (n={len(house_scores[house])})",
                     color=colors[house],
-                    edgecolor="black"
+                    edgecolor=Colors.DARK.value
                 )
     
     plt.title(f"Distribution of {subject} Scores by House")
