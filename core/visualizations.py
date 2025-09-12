@@ -43,7 +43,6 @@ def histo(df, subject="Care of Magical Creatures", bins=30):
         # Only add valid pairs
         if isinstance(house, str) and is_numeric_valid(score):
             house_scores[house].append(score)
-    
 
     # Check if we have data to plot
     if all(len(scores) == 0 for scores in house_scores.values()):
@@ -81,8 +80,5 @@ def histo(df, subject="Care of Magical Creatures", bins=30):
     plt.legend()
     plt.grid(alpha=0.3)
     plt.tight_layout()
-    
-    # Save to file and show
-    plt.savefig('histogram.png')
-    print(f"Histogram saved to 'histogram.png'")
     plt.show()
+
