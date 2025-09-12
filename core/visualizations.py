@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .operations import filter_numeric_values, min_max
+from .operations import is_numeric_valid, min_max
 from enum import Enum
 
 class Colors(Enum):
@@ -40,10 +40,11 @@ def histo(df, subject="Care of Magical Creatures", bins=30):
         house = df["Hogwarts House"][i]
         score = df[subject][i]
         
-        # Check if both house and score are valid
-        if isinstance(house, str) and house in houses and isinstance(score, (int, float)) and not np.isnan(score):
+        # Only add valid pairs
+        if isinstance(house, str) and is_numeric_valid(score):
             house_scores[house].append(score)
     
+
     # Check if we have data to plot
     if all(len(scores) == 0 for scores in house_scores.values()):
         print(f"No valid data found for subject '{subject}'")

@@ -160,7 +160,11 @@ def format_results(results):
 
     return output
 
-def filter_numeric_values(column):
+def is_numeric_valid(value):
+    """Check if a single value is numberic"""
+    return isinstance(value, (int, float)) and not np.isnan(value)
+
+def filter_numeric_values(column, column_val=None):
     """
     Filter a column to keep only numeric values (int, float) and remove NaN values
     """
