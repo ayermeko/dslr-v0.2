@@ -18,6 +18,8 @@ def main():
         histo(df)
     except Exception as e:
         print(f"{type(e).__name__}: {e}")
+    except KeyboardInterrupt:
+        print("Program was Interrupted!")
 
 if __name__ == "__main__":
     main()

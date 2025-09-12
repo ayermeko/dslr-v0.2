@@ -11,7 +11,7 @@ class Colors(Enum):
     GREEN = "#4FC714FF"
 
 
-def histo(df, subject="Care of Magical Creatures", bins=30):
+def histo(df, subject="Care of Magical Creatures", bins=100):
     """
     Create a histogram of scores for a subject, separated by house
     
