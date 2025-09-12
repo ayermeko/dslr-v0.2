@@ -133,29 +133,31 @@ def percentile(values, p):
     fraction = idx - lower_idx
     return lower_val + fraction * (upper_val - lower_val)
 
-def format_results(results, dataset):
+def format_results(results):
     """Format results as a table"""
     if not results:
         return "No numerical features found."
         
-    length_stat = 10  # length between statistical features and row names
-    length_cal = 15
+    length_stat = 6  # length between statistical features and row names
+    length_cal = 16
     col_names = list(results.keys())
-    
-    output = " ".ljust(length_stat)
+
+    output = " ".ljust(length_stat + 1)
+
     for col in col_names:
         display_name = col[:10] + "." if len(col) > 10 else col
-        output += f"{display_name}".rjust(length_cal)
+        output += f"{display_name}|".rjust(length_cal)
     output += "\n"
-    
+
     stats = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
     for stat in stats:
-        output += stat.ljust(length_stat)
+        output += f"{stat}".ljust(length_stat)
+        output += "|"
         for col in col_names:
             value = results[col][stat]
-            output += f"{value:.6f}".rjust(length_cal)
+            output += f"{value:.6f}|".rjust(length_cal)
         output += "\n"
-        
+
     return output
 
 def filter_numeric_values(column):
@@ -186,6 +188,6 @@ def describe(dataset):
             "Max": min_max(values, find="max")
         }
     
-    formatted_output = format_results(results, dataset)
-    print(formatted_output, end="")
+    formatted_output = format_results(results)
+    print(formatted_output)
     return results
