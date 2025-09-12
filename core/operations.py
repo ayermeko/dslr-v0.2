@@ -52,7 +52,7 @@ def read_csv(filename: str):
                     processed_row.append(np.nan)
                 else:
                     try:
-                        # Try to convert to float (for numeric columns)
+                        # Try to convert to float for numeric columns
                         processed_value = float(value)
                         processed_row.append(processed_value)
                     except ValueError:

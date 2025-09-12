@@ -14,11 +14,6 @@ class Colors(Enum):
 def histo(df, subject="Care of Magical Creatures", bins=100):
     """
     Create a histogram of scores for a subject, separated by house
-    
-    Args:
-        df: DataFrame containing the data
-        subject: Subject to plot (column name)
-        bins: Number of bins for the histogram
     """
     houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
     colors = {
@@ -28,43 +23,33 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
         "Slytherin": Colors.GREEN.value
     }
 
-    # Validate column names
-    if "Hogwarts House" not in df.columns:
-        raise ValueError("DataFrame must contain 'Hogwarts House' column")
     if subject not in df.columns:
         raise ValueError(f"DataFrame does not contain column '{subject}'")
     
-    # Collect scores by house
     house_scores = {house: [] for house in houses}
     for i in range(df.shape[0]):
         house = df["Hogwarts House"][i]
         score = df[subject][i]
         
-        # Only add valid pairs
         if isinstance(house, str) and is_numeric_valid(score):
             house_scores[house].append(score)
 
-    # Check if we have data to plot
     if all(len(scores) == 0 for scores in house_scores.values()):
         print(f"No valid data found for subject '{subject}'")
         return
     
-    # Plot histograms for all houses together
     plt.figure(figsize=(10, 6))
-    
-    # Determine common x-axis range for better comparison
     all_scores = []
     for scores in house_scores.values():
         all_scores.extend(scores)
     
     if all_scores:
-        # Create common bins for all histograms
         min_score = min_max(all_scores, find="min")
         max_score = min_max(all_scores, find="max")
         bin_edges = np.linspace(min_score, max_score, bins+1)
         
         for house in houses:
-            if house_scores[house]:  # Only plot if there are scores
+            if house_scores[house]:
                 plt.hist(
                     house_scores[house],
                     bins=bin_edges,
@@ -81,4 +66,3 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
     plt.grid(alpha=0.3)
     plt.tight_layout()
     plt.show()
-
