@@ -21,5 +21,6 @@ def main():
     except KeyboardInterrupt:
         print("Program was Interrupted!")
 
+
 if __name__ == "__main__":
     main()

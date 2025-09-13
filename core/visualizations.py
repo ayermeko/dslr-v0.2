@@ -3,6 +3,7 @@ import numpy as np
 from .operations import is_numeric_valid, min_max
 from enum import Enum
 
+
 class Colors(Enum):
     DARK = "#000000"
     RED = "#570101"
