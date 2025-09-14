@@ -147,11 +147,9 @@ def format_results(results):
     """Format results as a table using prettytable"""
     if not results:
         return "No numerical features found."
-    
-    # Get original column names
+
     original_col_names = list(results.keys())
     
-    # Create a mapping from adjusted names to original names
     adjusted_col_names = adjust_col_names(original_col_names)
     name_mapping = dict(zip(adjusted_col_names, original_col_names))
 
@@ -161,7 +159,6 @@ def format_results(results):
     for stat in results[adjusted_col_names[1]].keys():
         row = [stat]
         for adjusted_col in adjusted_col_names:
-            # Use the mapping to get the original column name
             original_col = name_mapping[adjusted_col]
             row.append(f"{results[original_col][stat]:.6f}")
         table.add_row(row)
