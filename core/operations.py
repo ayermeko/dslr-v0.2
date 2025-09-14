@@ -164,11 +164,13 @@ def is_numeric_valid(value):
     """Check if a single value is numberic"""
     return isinstance(value, (int, float)) and not np.isnan(value)
 
-def filter_numeric_values(column, column_val=None):
+def filter_numeric_values(columns):
     """
     Filter a column to keep only numeric values (int, float) and remove NaN values
     """
-    return [val for val in column if isinstance(val, (int, float)) and not np.isnan(val)]
+    if not columns:
+        raise ValueError("No columns.")
+    return [val for val in columns if is_numeric_valid(val)]
 
 def describe(dataset):
     """Generate descriptive statistics for the dataset"""
