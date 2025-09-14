@@ -3,6 +3,7 @@ import csv
 import os
 from dataclasses import dataclass, field
 from typing import Any, Optional, List
+from prettytable import PrettyTable
 
 @dataclass
 class DataFrame:
@@ -133,32 +134,40 @@ def percentile(values, p):
     fraction = idx - lower_idx
     return lower_val + fraction * (upper_val - lower_val)
 
+
+def adjust_col_names(original: List[str]) -> List[str]:
+    result = []
+    for col_name in original:
+        adjusted_col = col_name[:10] + "." if len(col_name) > 10 else col_name
+        result.append(adjusted_col)
+    return result
+
+
 def format_results(results):
-    """Format results as a table"""
+    """Format results as a table using prettytable"""
     if not results:
         return "No numerical features found."
-        
-    length_stat = 6  # length between statistical features and row names
-    length_cal = 16
-    col_names = list(results.keys())
+    
+    # Get original column names
+    original_col_names = list(results.keys())
+    
+    # Create a mapping from adjusted names to original names
+    adjusted_col_names = adjust_col_names(original_col_names)
+    name_mapping = dict(zip(adjusted_col_names, original_col_names))
 
-    output = " ".ljust(length_stat + 1)
-
-    for col in col_names:
-        display_name = col[:10] + "." if len(col) > 10 else col
-        output += f"{display_name}|".rjust(length_cal)
-    output += "\n"
-
+    table = PrettyTable()
+    table.field_names = [""] + adjusted_col_names
+    
     stats = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
     for stat in stats:
-        output += f"{stat}".ljust(length_stat)
-        output += "|"
-        for col in col_names:
-            value = results[col][stat]
-            output += f"{value:.6f}|".rjust(length_cal)
-        output += "\n"
-
-    return output
+        row = [stat]
+        for adjusted_col in adjusted_col_names:
+            # Use the mapping to get the original column name
+            original_col = name_mapping[adjusted_col]
+            row.append(f"{results[original_col][stat]:.6f}")
+        table.add_row(row)
+    
+    return str(table)
 
 def is_numeric_valid(value):
     """Check if a single value is numberic"""
@@ -168,8 +177,8 @@ def filter_numeric_values(columns):
     """
     Filter a column to keep only numeric values (int, float) and remove NaN values
     """
-    if not columns:
-        raise ValueError("No columns.")
+    if columns is None or len(columns) == 0:
+        raise ValueError("No columns or empty columns.")
     return [val for val in columns if is_numeric_valid(val)]
 
 def describe(dataset):
