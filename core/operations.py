@@ -158,8 +158,7 @@ def format_results(results):
     table = PrettyTable()
     table.field_names = [""] + adjusted_col_names
     
-    stats = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
-    for stat in stats:
+    for stat in results[adjusted_col_names[1]].keys():
         row = [stat]
         for adjusted_col in adjusted_col_names:
             # Use the mapping to get the original column name
