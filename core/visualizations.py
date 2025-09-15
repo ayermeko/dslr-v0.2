@@ -68,9 +68,15 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
     plt.show()
 
 
-def scatterplot(df) -> None:
-    x = df["Arithmancy"]
-    y = df["Defense Against the Dark Arts"]
+def pearsonr_matrix(numeric_col: dict):
+    pass
 
-    plt.scatter(x, y)
-    plt.show()
+def scatterplot(numeric_col: dict) -> None:
+    """
+    Create a scatter plot of the two most correlated features
+    
+    Args:
+        numeric_col: Dictionary where keys are column names and values are lists of numeric values
+    """
+    # Calculate correlation matrix
+    corr_matrix = pearsonr_matrix(numeric_col)
