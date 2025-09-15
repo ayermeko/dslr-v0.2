@@ -3,7 +3,6 @@ import numpy as np
 from .operations import is_numeric_valid, min_max
 from enum import Enum
 
-
 class Colors(Enum):
     DARK = "#000000"
     RED = "#570101"
@@ -70,10 +69,8 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
 
 
 def scatterplot(df) -> None:
+    x = df["Arithmancy"]
+    y = df["Defense Against the Dark Arts"]
 
-    plt.figure(figsize=(6,6))
-    plt.scatter(df['Arithmancy'], df['Ancient Runes'], alpha=0.5)
-    plt.xlabel('Arithmancy')
-    plt.ylabel('Ancient Runes')
-    plt.title('Arithmancy vs Ancient Ruins')
+    plt.scatter(x, y)
     plt.show()
