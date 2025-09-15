@@ -67,3 +67,13 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
     plt.grid(alpha=0.3)
     plt.tight_layout()
     plt.show()
+
+
+def scatterplot(df) -> None:
+
+    plt.figure(figsize=(6,6))
+    plt.scatter(df['Arithmancy'], df['Ancient Runes'], alpha=0.5)
+    plt.xlabel('Arithmancy')
+    plt.ylabel('Ancient Runes')
+    plt.title('Arithmancy vs Ancient Ruins')
+    plt.show()
