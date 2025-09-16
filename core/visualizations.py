@@ -109,7 +109,7 @@ def scatterplot(dataset) -> None:
             x = [indexed_columns[max_pair[0]][idx] for idx in sorted(common_indices)]
             y = [indexed_columns[max_pair[1]][idx] for idx in sorted(common_indices)]
             
-            plt.scatter(x, y, alpha=0.5)
+            plt.scatter(x, y, alpha=0.5, color=Colors.RED.value)
             plt.title(f"Scatter Plot: {max_pair[0]} vs {max_pair[1]}\nPearson Correlation: {correlation:.6f}")
             plt.xlabel(max_pair[0])
             plt.ylabel(max_pair[1])
