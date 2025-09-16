@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .operations import is_numeric_valid, min_max, mean
+from .operations import is_numeric_valid, min_max, correlation_matrix, filter_numeric_values
 from enum import Enum
 
 
@@ -67,4 +67,57 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
     plt.grid(alpha=0.3)
     plt.tight_layout()
     plt.show()
+
+
+def scatterplot(dataset) -> None:
+    indexed_columns = {}
+    for col_name, col in dataset.items():
+        if col_name != 'Index':
+            test_values = filter_numeric_values(col)
+            if len(test_values) > 0:
+                indexed_columns[col_name] = filter_numeric_values(col, remove_nan=True, preserve_indices=True)
+                print(f"Column '{col_name}' has {len(indexed_columns[col_name])} numeric values")
+
+    corr_matrix = correlation_matrix(indexed_columns)
+
+
+    # Find the highest correlation
+    max_corr = 0
+    max_pair = None
+    
+    for col1 in corr_matrix:
+        for col2 in corr_matrix:
+            if col1 != col2:  # Skip self-correlations
+                curr_corr = abs(corr_matrix[col1][col2])
+                if curr_corr > max_corr:
+                    max_corr = curr_corr
+                    max_pair = (col1, col2)
+    
+    if max_pair:
+        try:
+            correlation = corr_matrix[max_pair[0]][max_pair[1]]
+            print(f"Most correlated features: {max_pair[0]} and {max_pair[1]}")
+            print(f"Correlation coefficient: {correlation}")
+            
+            # Create scatter plot
+            plt.figure(figsize=(10, 6))
+            
+            # Get common indices for these two columns
+            common_indices = set(indexed_columns[max_pair[0]].keys()) & set(indexed_columns[max_pair[1]].keys())
+            
+            # Extract values
+            x = [indexed_columns[max_pair[0]][idx] for idx in sorted(common_indices)]
+            y = [indexed_columns[max_pair[1]][idx] for idx in sorted(common_indices)]
+            
+            plt.scatter(x, y, alpha=0.5)
+            plt.title(f"Scatter Plot: {max_pair[0]} vs {max_pair[1]}\nPearson Correlation: {correlation:.6f}")
+            plt.xlabel(max_pair[0])
+            plt.ylabel(max_pair[1])
+            plt.grid(alpha=0.3)
+            plt.tight_layout()
+            plt.show()
+        except KeyboardInterrupt:
+            print("Program was Interrupted!")
+    else:
+        print("No valid correlation pairs found")
 

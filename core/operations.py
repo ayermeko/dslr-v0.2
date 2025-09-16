@@ -134,6 +134,31 @@ def percentile(values, p):
     fraction = idx - lower_idx
     return lower_val + fraction * (upper_val - lower_val)
 
+def correlation_matrix(indexed_columns):
+        col_names = list(indexed_columns.keys())
+        result = {col1: {col2: 0.0 for col2 in col_names} for col1 in col_names}
+        for col in col_names:
+            result[col][col] = 1.0
+
+        for i, col1 in enumerate(col_names):
+            for j in range(i+1, len(col_names)):
+                col2 = col_names[j]
+
+                # Find common indices between these two columns
+                common_indices = set(indexed_columns[col1].keys()) & set(indexed_columns[col2].keys())
+                
+                if len(common_indices) > 1:
+                    x = [indexed_columns[col1][idx] for idx in common_indices]
+                    y = [indexed_columns[col2][idx] for idx in common_indices]
+                    
+                    try:
+                        corr = np.corrcoef(x, y)[0, 1]
+                        if not np.isnan(corr):
+                            result[col1][col2] = corr
+                            result[col2][col1] = corr
+                    except:
+                        raise ValueError("Failed to calculate corr cofficinet")
+        return result
 
 def adjust_col_names(original: List[str]) -> List[str]:
     result = []
