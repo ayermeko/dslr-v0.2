@@ -3,7 +3,7 @@ from core.operations import validate
 
 def main():
     try:
-        df = validate("datasets/dataset_train.csv")
+        df = validate("datasets/dataset_test.csv")
         
         # Show counts of each house
         houses = {}
