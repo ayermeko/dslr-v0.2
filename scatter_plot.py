@@ -23,16 +23,24 @@ from core.visualizations import scatterplot
 
 if __name__ == "__main__":
     numeric_columns = {}
-
+    indexed_columns = {}
+    
     dataset = validate("/Users/alibiyermekov/MyProjects/dslr-v0.2/datasets/dataset_train.csv")
 
-    for col_names, col in dataset.items():
-        values = filter_numeric_values(col)
-        if values:
-            numeric_columns[col_names] = values
+    # Step 1: Collect numeric values with indices preserved
+    for col_name, col in dataset.items():
+        if col_name != 'Index':  # Skip the Index column
+            indexed_columns[col_name] = filter_numeric_values(col, remove_nan=False, preserve_indices=True)
     
-    if 'Index' in numeric_columns:
-        del numeric_columns["Index"]
-
-    scatterplot(numeric_columns)
+    # Step 2: Find common indices across all columns
+    all_indices = set.intersection(*[set(col_dict.keys()) for col_dict in indexed_columns.values()])
+    print(f"Found {len(all_indices)} rows with data in all columns")
+    
+    # Step 3: Create aligned data using only common indices
+    for col_name, indices_dict in indexed_columns.items():
+        numeric_columns[col_name] = [indices_dict[idx] for idx in sorted(all_indices)]
+    
+    # Now all columns in numeric_columns have the same length and are properly aligned
+    # You can safely calculate correlations
+    # scatterplot(numeric_columns)
 
