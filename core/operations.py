@@ -194,7 +194,6 @@ def describe(dataset):
     
     results = {}
     for col_name, col in dataset.items():
-        print(col)
         # Filter number values, ignore NaN
         values = filter_numeric_values(col)
         # Skip in case of empty column
