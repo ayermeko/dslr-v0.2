@@ -182,6 +182,7 @@ def filter_numeric_values(columns, remove_nan=True, preserve_indices=False):
             is_numeric = isinstance(val, (int, float))
             if is_numeric and (not remove_nan or not np.isnan(val)):
                 result[i] = val
+        print(result)
         return result
     else:
         if remove_nan:

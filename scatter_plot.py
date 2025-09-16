@@ -1,25 +1,6 @@
-# Original pandas-based approach (kept for reference)
-# # Select numeric features (skip first column)
-# numeric_features = df.iloc[:, 1:].select_dtypes(include='number')
-#
-# # Compute correlation matrix
-# corr_matrix = numeric_features.corr()
-#
-# # Flatten the matrix
-# corr_matrix_unstacked = corr_matrix.unstack()
-#
-# # Remove self-correlation
-# corr_matrix_unstacked = corr_matrix_unstacked[corr_matrix_unstacked != 1]
-#
-# # Find the pair with the largest absolute correlation (positive or negative)
-# most_similar_pair = corr_matrix_unstacked.abs().idxmax()
-# correlation_value = corr_matrix_unstacked[most_similar_pair]
-#
-# print("Most similar features:", most_similar_pair)
-# print("Correlation value:", correlation_value)
-
+import numpy as np
+import matplotlib.pyplot as plt
 from core.operations import validate, filter_numeric_values
-from core.visualizations import scatterplot
 
 if __name__ == "__main__":
     numeric_columns = {}
@@ -27,20 +8,93 @@ if __name__ == "__main__":
     
     dataset = validate("/Users/alibiyermekov/MyProjects/dslr-v0.2/datasets/dataset_train.csv")
 
-    # Step 1: Collect numeric values with indices preserved
     for col_name, col in dataset.items():
-        if col_name != 'Index':  # Skip the Index column
-            indexed_columns[col_name] = filter_numeric_values(col, remove_nan=False, preserve_indices=True)
+        if col_name != 'Index':
+            test_values = filter_numeric_values(col)
+            if len(test_values) > 0:
+                indexed_columns[col_name] = filter_numeric_values(col, remove_nan=True, preserve_indices=True)
+                print(f"Column '{col_name}' has {len(indexed_columns[col_name])} numeric values")
+
+    # Step 2: Find common indices across all column pairs
+    # We'll compute correlations for each pair separately to handle NaN values better
     
-    # Step 2: Find common indices across all columns
-    all_indices = set.intersection(*[set(col_dict.keys()) for col_dict in indexed_columns.values()])
-    print(f"Found {len(all_indices)} rows with data in all columns")
     
-    # Step 3: Create aligned data using only common indices
-    for col_name, indices_dict in indexed_columns.items():
-        numeric_columns[col_name] = [indices_dict[idx] for idx in sorted(all_indices)]
+    # Create a custom correlation matrix function that takes our indexed columns
+    def improved_correlation_matrix(indexed_columns):
+        col_names = list(indexed_columns.keys())
+        result = {col1: {col2: 0.0 for col2 in col_names} for col1 in col_names}
+        
+        # Set diagonal to 1.0
+        for col in col_names:
+            result[col][col] = 1.0
+        
+        # Calculate correlations for each pair
+        for i, col1 in enumerate(col_names):
+            for j in range(i+1, len(col_names)):
+                col2 = col_names[j]
+                
+                # Find common indices between these two columns
+                common_indices = set(indexed_columns[col1].keys()) & set(indexed_columns[col2].keys())
+                
+                if len(common_indices) > 1:  # Need at least 2 points for correlation
+                    # Extract values at common indices
+                    x = [indexed_columns[col1][idx] for idx in common_indices]
+                    y = [indexed_columns[col2][idx] for idx in common_indices]
+                    
+                    # Calculate correlation
+                    try:
+                        corr = np.corrcoef(x, y)[0, 1]
+                        if not np.isnan(corr):
+                            result[col1][col2] = corr
+                            result[col2][col1] = corr
+                    except:
+                        pass
+        
+        return result
     
-    # Now all columns in numeric_columns have the same length and are properly aligned
-    # You can safely calculate correlations
-    # scatterplot(numeric_columns)
+    # Calculate correlation matrix
+    corr_matrix = improved_correlation_matrix(indexed_columns)
+    
+    # Find the highest correlation
+    max_corr = 0
+    max_pair = None
+    
+    for col1 in corr_matrix:
+        for col2 in corr_matrix:
+            if col1 != col2:  # Skip self-correlations
+                curr_corr = abs(corr_matrix[col1][col2])
+                if curr_corr > max_corr:
+                    max_corr = curr_corr
+                    max_pair = (col1, col2)
+    
+    if max_pair:
+        correlation = corr_matrix[max_pair[0]][max_pair[1]]
+        print(f"Most correlated features: {max_pair[0]} and {max_pair[1]}")
+        print(f"Correlation coefficient: {correlation:.6f}")
+        
+        # Create scatter plot
+        plt.figure(figsize=(10, 6))
+        
+        # Get common indices for these two columns
+        common_indices = set(indexed_columns[max_pair[0]].keys()) & set(indexed_columns[max_pair[1]].keys())
+        
+        # Extract values
+        x = [indexed_columns[max_pair[0]][idx] for idx in sorted(common_indices)]
+        y = [indexed_columns[max_pair[1]][idx] for idx in sorted(common_indices)]
+        
+        plt.scatter(x, y, alpha=0.5)
+        
+        # Add correlation line
+        z = np.polyfit(x, y, 1)
+        p = np.poly1d(z)
+        plt.plot(x, p(x), "r--", alpha=0.8)
+        
+        plt.title(f"Scatter Plot: {max_pair[0]} vs {max_pair[1]}\nPearson Correlation: {correlation:.6f}")
+        plt.xlabel(max_pair[0])
+        plt.ylabel(max_pair[1])
+        plt.grid(alpha=0.3)
+        plt.tight_layout()
+        plt.show()
+    else:
+        print("No valid correlation pairs found")
 

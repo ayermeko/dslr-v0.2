@@ -68,26 +68,3 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
     plt.tight_layout()
     plt.show()
 
-def pearsonr_matrix(numeric_col: dict):
-    x = np.asarray(numeric_col['Arithmancy'], dtype=float)
-    y = np.asarray(numeric_col['Astronomy'], dtype=float)
-
-    print(len(x))
-    print(len(y))
-
-    import pandas as pd
-
-    dataset = pd.read_csv("/Users/alibiyermekov/MyProjects/dslr-v0.2/datasets/dataset_train.csv")
-
-    print(np.mean(dataset['Arithmancy']))
-
-    # print(numerator)
-def scatterplot(numeric_col: dict) -> None:
-    """
-    Create a scatter plot of the two most correlated features
-    
-    Args:
-        numeric_col: Dictionary where keys are column names and values are lists of numeric values
-    """
-    # Calculate correlation matrix
-    corr_matrix = pearsonr_matrix(numeric_col)
