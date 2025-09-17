@@ -8,43 +8,40 @@ def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
     Create a histogram of scores for a subject, separated by house
     """
 
-    if not isinstance(df[freq][0], str):
-        raise TypeError("Non-string value for catigories or NaN")
     if freq not in df.columns:
         raise ValueError(f"DataFrame does not have '{freq}'")
+    if not all(isinstance(value, str) for value in df[freq]):
+        raise TypeError("Non-string value for catigories or NaN")
     if subject not in df.columns:
         raise ValueError(f"DataFrame does not contain column '{subject}'")
     
     cats = list(set(df[freq]))
     
     col_scores = {cat: [] for cat in cats}
-    for i in range(df.shape[0]):
+    for i in range(df.shape[0]): # 0 defines a length of row
         freq_cat = df[freq][i]
         score = df[subject][i]
         
         if isinstance(freq_cat, str) and is_numeric_valid(score):
-            col_scores[freq_cat].append(score)
+            col_scores[freq_cat].append(score) # adding a score by catigories
     
     plt.figure(figsize=(10, 6))
-    all_scores = []
-    for score in col_scores.values():
-        all_scores.extend(score)
-    
+    all_scores = filter_numeric_values(df[subject], remove_nan=True)
+
     try:
-        if all_scores:
-            min_score = min_max(all_scores, find="min")
-            max_score = min_max(all_scores, find="max")
-            bin_edges = np.linspace(min_score, max_score, bins+1)
-            
-            for cat in cats:
-                if col_scores[cat]:
-                    plt.hist(
-                        col_scores[cat],
-                        bins=bin_edges,
-                        alpha=0.6,
-                        label=f"{cat} (n={len(col_scores[cat])})",
-                        edgecolor="black"
-                    )
+        min_score = min_max(all_scores, find="min")
+        max_score = min_max(all_scores, find="max")
+        bin_edges = np.linspace(min_score, max_score, bins+1)
+        
+        for cat in cats:
+            if col_scores[cat]:
+                plt.hist(
+                    col_scores[cat],
+                    bins=bin_edges,
+                    alpha=0.7,
+                    label=f"{cat} (n={len(col_scores[cat])})",
+                    edgecolor="black"
+                )
         
         plt.title(f"Distribution of {subject} Scores")
         plt.xlabel("Scores (Hight)")
