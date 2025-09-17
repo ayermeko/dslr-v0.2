@@ -12,7 +12,7 @@ class Colors(Enum):
     GREEN = "#4FC714FF"
 
 
-def histo(df, subject="Care of Magical Creatures", bins=100):
+def histo(df, subject="Care of Magical Creatures", bins=10):
     """
     Create a histogram of scores for a subject, separated by house
     """
@@ -44,29 +44,32 @@ def histo(df, subject="Care of Magical Creatures", bins=100):
     for scores in house_scores.values():
         all_scores.extend(scores)
     
-    if all_scores:
-        min_score = min_max(all_scores, find="min")
-        max_score = min_max(all_scores, find="max")
-        bin_edges = np.linspace(min_score, max_score, bins+1)
+    try:
+        if all_scores:
+            min_score = min_max(all_scores, find="min")
+            max_score = min_max(all_scores, find="max")
+            bin_edges = np.linspace(min_score, max_score, bins+1)
+            
+            for house in houses:
+                if house_scores[house]:
+                    plt.hist(
+                        house_scores[house],
+                        bins=bin_edges,
+                        alpha=0.6,
+                        label=f"{house} (n={len(house_scores[house])})",
+                        color=colors[house],
+                        edgecolor=Colors.DARK.value
+                    )
         
-        for house in houses:
-            if house_scores[house]:
-                plt.hist(
-                    house_scores[house],
-                    bins=bin_edges,
-                    alpha=0.6,
-                    label=f"{house} (n={len(house_scores[house])})",
-                    color=colors[house],
-                    edgecolor=Colors.DARK.value
-                )
-    
-    plt.title(f"Distribution of {subject} Scores by House")
-    plt.xlabel("Scores")
-    plt.ylabel("Number of Students")
-    plt.legend()
-    plt.grid(alpha=0.3)
-    plt.tight_layout()
-    plt.show()
+        plt.title(f"Distribution of {subject} Scores by House")
+        plt.xlabel("Scores")
+        plt.ylabel("Number of Students")
+        plt.legend()
+        plt.grid(alpha=0.3)
+        plt.tight_layout()
+        plt.show()
+    except KeyboardInterrupt:
+        print("Display was Interrupted!")
 
 
 def scatterplot(dataset) -> None:
