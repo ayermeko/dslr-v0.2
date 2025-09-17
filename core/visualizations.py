@@ -3,13 +3,13 @@ import numpy as np
 from .operations import is_numeric_valid, min_max, correlation_matrix, filter_numeric_values
 
 
-def histo(df, subject="Care of Magical Creatures", freq="Hogwarts House", bins=100):
+def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
     """
     Create a histogram of scores for a subject, separated by house
     """
 
     if not isinstance(df[freq][0], str):
-        raise TypeError("Non-string value for catigories")
+        raise TypeError("Non-string value for catigories or NaN")
     if freq not in df.columns:
         raise ValueError(f"DataFrame does not have '{freq}'")
     if subject not in df.columns:
