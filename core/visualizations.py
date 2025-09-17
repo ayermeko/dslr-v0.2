@@ -59,10 +59,10 @@ def scatterplot(dataset) -> None:
     for col_name, col in dataset.items():
         if col_name == 'Index':
             continue
-        test_values = filter_numeric_values(col)
-        if len(test_values) > 0:
+        threshold = filter_numeric_values(col)
+        if len(threshold) > 0:
             indexed_columns[col_name] = filter_numeric_values(col, remove_nan=True, preserve_indices=True)
-            print(f"Column '{col_name}' has {len(indexed_columns[col_name])} numeric values")
+            print(f"'{col_name}' has {len(indexed_columns[col_name])} numeric values")
 
     corr_matrix = correlation_matrix(indexed_columns)
 
@@ -83,10 +83,8 @@ def scatterplot(dataset) -> None:
             print(f"Most correlated features: {max_pair[0]} and {max_pair[1]}")
             print(f"Correlation coefficient: {correlation}")
             
-            # Create scatter plot
             plt.figure(figsize=(10, 6))
             
-            # Get common indices for these two columns
             common_indices = set(indexed_columns[max_pair[0]].keys()) & set(indexed_columns[max_pair[1]].keys())
             
             # Extract values
@@ -105,3 +103,5 @@ def scatterplot(dataset) -> None:
     else:
         print("No valid correlation pairs found")
 
+def pair_plot(dataset) -> None:
+    pass
