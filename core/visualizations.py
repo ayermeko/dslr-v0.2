@@ -68,8 +68,6 @@ def scatterplot(dataset) -> None:
 
     corr_matrix = correlation_matrix(indexed_columns)
 
-
-    # Find the highest correlation
     max_corr = 0
     max_pair = None
     
