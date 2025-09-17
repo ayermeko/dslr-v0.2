@@ -57,11 +57,12 @@ def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
 def scatterplot(dataset) -> None:
     indexed_columns = {}
     for col_name, col in dataset.items():
-        if col_name != 'Index':
-            test_values = filter_numeric_values(col)
-            if len(test_values) > 0:
-                indexed_columns[col_name] = filter_numeric_values(col, remove_nan=True, preserve_indices=True)
-                print(f"Column '{col_name}' has {len(indexed_columns[col_name])} numeric values")
+        if col_name == 'Index':
+            continue
+        test_values = filter_numeric_values(col)
+        if len(test_values) > 0:
+            indexed_columns[col_name] = filter_numeric_values(col, remove_nan=True, preserve_indices=True)
+            print(f"Column '{col_name}' has {len(indexed_columns[col_name])} numeric values")
 
     corr_matrix = correlation_matrix(indexed_columns)
 
