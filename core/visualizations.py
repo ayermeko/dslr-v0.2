@@ -1,48 +1,34 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from .operations import is_numeric_valid, min_max, correlation_matrix, filter_numeric_values
-from enum import Enum
 
 
-class Colors(Enum):
-    DARK = "#000000"
-    RED = "#570101"
-    YELLOW = "#FFFF0000"
-    BLUE = "#34B5BC8A"
-    GREEN = "#4FC714FF"
-
-
-def histo(df, subject="Care of Magical Creatures", bins=10):
+def histo(df, subject="Care of Magical Creatures", freq="Hogwarts House", bins=100):
     """
     Create a histogram of scores for a subject, separated by house
     """
-    houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
-    colors = {
-        "Gryffindor": Colors.RED.value,
-        "Hufflepuff": Colors.YELLOW.value,
-        "Ravenclaw": Colors.BLUE.value,
-        "Slytherin": Colors.GREEN.value
-    }
 
+    if not isinstance(df[freq][0], str):
+        raise TypeError("Non-string value for catigories")
+    if freq not in df.columns:
+        raise ValueError(f"DataFrame does not have '{freq}'")
     if subject not in df.columns:
         raise ValueError(f"DataFrame does not contain column '{subject}'")
     
-    house_scores = {house: [] for house in houses}
+    cats = list(set(df[freq]))
+    
+    col_scores = {cat: [] for cat in cats}
     for i in range(df.shape[0]):
-        house = df["Hogwarts House"][i]
+        freq_cat = df[freq][i]
         score = df[subject][i]
         
-        if isinstance(house, str) and is_numeric_valid(score):
-            house_scores[house].append(score)
-
-    if all(len(scores) == 0 for scores in house_scores.values()):
-        print(f"No valid data found for subject '{subject}'")
-        return
+        if isinstance(freq_cat, str) and is_numeric_valid(score):
+            col_scores[freq_cat].append(score)
     
     plt.figure(figsize=(10, 6))
     all_scores = []
-    for scores in house_scores.values():
-        all_scores.extend(scores)
+    for score in col_scores.values():
+        all_scores.extend(score)
     
     try:
         if all_scores:
@@ -50,15 +36,14 @@ def histo(df, subject="Care of Magical Creatures", bins=10):
             max_score = min_max(all_scores, find="max")
             bin_edges = np.linspace(min_score, max_score, bins+1)
             
-            for house in houses:
-                if house_scores[house]:
+            for cat in cats:
+                if col_scores[cat]:
                     plt.hist(
-                        house_scores[house],
+                        col_scores[cat],
                         bins=bin_edges,
                         alpha=0.6,
-                        label=f"{house} (n={len(house_scores[house])})",
-                        color=colors[house],
-                        edgecolor=Colors.DARK.value
+                        label=f"{cat} (n={len(col_scores[cat])})",
+                        edgecolor="black"
                     )
         
         plt.title(f"Distribution of {subject} Scores by House")
@@ -112,7 +97,7 @@ def scatterplot(dataset) -> None:
             x = [indexed_columns[max_pair[0]][idx] for idx in sorted(common_indices)]
             y = [indexed_columns[max_pair[1]][idx] for idx in sorted(common_indices)]
             
-            plt.scatter(x, y, alpha=0.5, color=Colors.RED.value)
+            plt.scatter(x, y, alpha=0.5, color="gray")
             plt.title(f"Scatter Plot: {max_pair[0]} vs {max_pair[1]}\nPearson Correlation: {correlation:.6f}")
             plt.xlabel(max_pair[0])
             plt.ylabel(max_pair[1])
