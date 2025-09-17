@@ -46,9 +46,9 @@ def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
                         edgecolor="black"
                     )
         
-        plt.title(f"Distribution of {subject} Scores by House")
-        plt.xlabel("Scores")
-        plt.ylabel("Number of Students")
+        plt.title(f"Distribution of {subject} Scores")
+        plt.xlabel("Scores (Hight)")
+        plt.ylabel("Number of Students (Frequency)")
         plt.legend()
         plt.grid(alpha=0.3)
         plt.tight_layout()
