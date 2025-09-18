@@ -103,3 +103,5 @@ def scatterplot(dataset) -> None:
     else:
         print("No valid correlation pairs found")
 
+def pair_plot(dataset):
+    pass
