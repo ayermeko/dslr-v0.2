@@ -132,7 +132,12 @@ def percentile(values, p):
     return lower_val + fraction * (upper_val - lower_val)
 
 def get_keys(idxed_cols: dict[str, dict[int, float]], first, second) -> set:
+    """To get a common keys form two dicts."""
     return set(idxed_cols[first].keys()) & set(idxed_cols[second].keys())
+
+def extract(idxed_col: dict[int, float], common_indices) -> List[float]:
+    """To get a values form common idexed keys."""
+    return [idxed_col[idx] for idx in sorted(common_indices)]
 
 def corr(idxed_cols: dict[str, dict[int, float]]) -> dict[str, dict[str, float]]:
         col_names = list(idxed_cols.keys())
@@ -143,8 +148,8 @@ def corr(idxed_cols: dict[str, dict[int, float]]) -> dict[str, dict[str, float]]
                 col2 = col_names[j]
                 common_indices = get_keys(idxed_cols, col1, col2)
                 if len(common_indices) > 1:
-                    x = [idxed_cols[col1][idx] for idx in common_indices]
-                    y = [idxed_cols[col2][idx] for idx in common_indices]
+                    x = extract(idxed_cols[col1], common_indices)
+                    y = extract(idxed_cols[col2], common_indices)
 
                     try:
                         corr = np.corrcoef(x, y)[0, 1]

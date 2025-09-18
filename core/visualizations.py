@@ -5,7 +5,8 @@ from .operations import (
     min_max, 
     corr, 
     filter, 
-    get_keys
+    get_keys,
+    extract
 )
 
 
@@ -93,8 +94,8 @@ def scatterplot(dataset) -> None:
             
             common_indices = get_keys(idxed_cols, max_pair[0], max_pair[1])
             # Extract values
-            x = [idxed_cols[max_pair[0]][idx] for idx in sorted(common_indices)]
-            y = [idxed_cols[max_pair[1]][idx] for idx in sorted(common_indices)]
+            x = extract(idxed_cols[max_pair[0]], common_indices)
+            y = extract(idxed_cols[max_pair[1]], common_indices)
             
             plt.scatter(x, y, alpha=0.5, color="gray")
             plt.title(f"Scatter Plot: {max_pair[0]} vs {max_pair[1]}")
