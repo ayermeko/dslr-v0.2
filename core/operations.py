@@ -39,7 +39,7 @@ class DataFrame:
         return self.data.shape
 
 
-def read_csv(filename: str):
+def read_csv(filename: str) -> DataFrame:
     with open(filename, 'r') as csvfile:
         reader = csv.reader(csvfile)
         header = next(reader)
@@ -49,20 +49,17 @@ def read_csv(filename: str):
             processed_row = []
             for value in row:
                 if value.strip() == '':
-                    # Handle empty cells
                     processed_row.append(np.nan)
                 else:
                     try:
-                        # Try to convert to float for numeric columns
-                        processed_value = float(value)
+                        processed_value = float(value) # tries to convert to float
                         processed_row.append(processed_value)
                     except ValueError:
-                        # For non-numeric data (like house names), keep as string
-                        processed_row.append(value)
+                        processed_row.append(value) # storing string data
             dataset.append(processed_row)
     return DataFrame(dataset, header)
 
-def validate(filename: str):
+def validate(filename: str) -> DataFrame:
     """
     This function is to validate the file, and data
     converting a raw data into a df
@@ -134,15 +131,17 @@ def percentile(values, p):
     fraction = idx - lower_idx
     return lower_val + fraction * (upper_val - lower_val)
 
-def correlation_matrix(indexed_columns):
+def get_keys(indexed_columns: dict[str, dict[int, float]], first, second) -> set:
+    return set(indexed_columns[first].keys()) & set(indexed_columns[second].keys())
+
+def correlation_matrix(indexed_columns: dict[str, dict[int, float]]) -> dict[str, dict[str, float]]:
         col_names = list(indexed_columns.keys())
         result = {col1: {col2: 0.0 for col2 in col_names if col1 != col2} for col1 in col_names}
 
         for i, col1 in enumerate(col_names):
             for j in range(i+1, len(col_names)):
                 col2 = col_names[j]
-                common_indices = set(indexed_columns[col1].keys()) & set(indexed_columns[col2].keys())
-                
+                common_indices = get_keys(indexed_columns, col1, col2)
                 if len(common_indices) > 1:
                     x = [indexed_columns[col1][idx] for idx in common_indices]
                     y = [indexed_columns[col2][idx] for idx in common_indices]
@@ -165,7 +164,7 @@ def adjust_col_names(original: List[str]) -> List[str]:
     return result
 
 
-def format_results(results):
+def format_results(results: dict[str, dict[str, float]]) -> str:
     """Format results as a table using prettytable"""
     if not results:
         return "No numerical features found."
@@ -187,11 +186,13 @@ def format_results(results):
     
     return str(table)
 
-def is_numeric_valid(value):
+
+def is_numeric_valid(value: float) -> bool:
     """Check if a single value is numberic"""
     return isinstance(value, (int, float)) and not np.isnan(value)
 
-def filter_numeric_values(columns, remove_nan=True, preserve_indices=False):
+
+def filter_numeric_values(columns, remove_nan=True, preserve_indices=False) -> dict | list:
     """
     Filter a column to keep only numeric values (int, float) and optionally remove NaN values
     """
@@ -211,9 +212,8 @@ def filter_numeric_values(columns, remove_nan=True, preserve_indices=False):
         else:
             return [val for val in columns if isinstance(val, (int, float))]
 
-def describe(dataset):
+def describe(dataset: DataFrame) -> None:
     """Generate descriptive statistics for the dataset"""
-    
     results = {}
     for col_name, col in dataset.items():
         values = filter_numeric_values(col, remove_nan=True)
@@ -234,4 +234,3 @@ def describe(dataset):
     
     formatted_output = format_results(results)
     print(formatted_output)
-    return results

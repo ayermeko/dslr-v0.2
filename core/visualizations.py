@@ -1,6 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from .operations import is_numeric_valid, min_max, correlation_matrix, filter_numeric_values
+from .operations import (
+    is_numeric_valid, 
+    min_max, 
+    correlation_matrix, 
+    filter_numeric_values, 
+    get_keys
+)
 
 
 def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
@@ -85,8 +91,7 @@ def scatterplot(dataset) -> None:
             
             plt.figure(figsize=(10, 6))
             
-            common_indices = set(indexed_columns[max_pair[0]].keys()) & set(indexed_columns[max_pair[1]].keys())
-            
+            common_indices = get_keys(indexed_columns, max_pair[0], max_pair[1])
             # Extract values
             x = [indexed_columns[max_pair[0]][idx] for idx in sorted(common_indices)]
             y = [indexed_columns[max_pair[1]][idx] for idx in sorted(common_indices)]
