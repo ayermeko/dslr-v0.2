@@ -3,8 +3,8 @@ import numpy as np
 from .operations import (
     is_numeric_valid, 
     min_max, 
-    correlation_matrix, 
-    filter_numeric_values, 
+    corr, 
+    filter, 
     get_keys
 )
 
@@ -32,7 +32,7 @@ def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
             col_scores[freq_cat].append(score) # adding a score by catigories
     
     plt.figure(figsize=(10, 6))
-    all_scores = filter_numeric_values(df[subject], remove_nan=True)
+    all_scores = filter(df[subject], remove_nan=True)
 
     try:
         min_score = min_max(all_scores, find="min")
@@ -61,16 +61,16 @@ def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
 
 
 def scatterplot(dataset) -> None:
-    indexed_columns = {}
+    idxed_cols = {}
     for col_name, col in dataset.items():
         if col_name == 'Index':
             continue
-        threshold = filter_numeric_values(col)
+        threshold = filter(col)
         if len(threshold) > 0:
-            indexed_columns[col_name] = filter_numeric_values(col, remove_nan=True, preserve_indices=True)
-            print(f"'{col_name}' has {len(indexed_columns[col_name])} numeric values")
+            idxed_cols[col_name] = filter(col, preserve_indices=True)
+            print(f"'{col_name}' has {len(idxed_cols[col_name])} numeric values")
 
-    corr_matrix = correlation_matrix(indexed_columns)
+    corr_matrix = corr(idxed_cols)
 
     max_corr = 0
     max_pair = None
@@ -91,13 +91,13 @@ def scatterplot(dataset) -> None:
             
             plt.figure(figsize=(10, 6))
             
-            common_indices = get_keys(indexed_columns, max_pair[0], max_pair[1])
+            common_indices = get_keys(idxed_cols, max_pair[0], max_pair[1])
             # Extract values
-            x = [indexed_columns[max_pair[0]][idx] for idx in sorted(common_indices)]
-            y = [indexed_columns[max_pair[1]][idx] for idx in sorted(common_indices)]
+            x = [idxed_cols[max_pair[0]][idx] for idx in sorted(common_indices)]
+            y = [idxed_cols[max_pair[1]][idx] for idx in sorted(common_indices)]
             
             plt.scatter(x, y, alpha=0.5, color="gray")
-            plt.title(f"Scatter Plot: {max_pair[0]} vs {max_pair[1]}\nPearson Correlation: {correlation:.6f}")
+            plt.title(f"Scatter Plot: {max_pair[0]} vs {max_pair[1]}")
             plt.xlabel(max_pair[0])
             plt.ylabel(max_pair[1])
             plt.grid(alpha=0.3)

@@ -131,20 +131,20 @@ def percentile(values, p):
     fraction = idx - lower_idx
     return lower_val + fraction * (upper_val - lower_val)
 
-def get_keys(indexed_columns: dict[str, dict[int, float]], first, second) -> set:
-    return set(indexed_columns[first].keys()) & set(indexed_columns[second].keys())
+def get_keys(idxed_cols: dict[str, dict[int, float]], first, second) -> set:
+    return set(idxed_cols[first].keys()) & set(idxed_cols[second].keys())
 
-def correlation_matrix(indexed_columns: dict[str, dict[int, float]]) -> dict[str, dict[str, float]]:
-        col_names = list(indexed_columns.keys())
+def corr(idxed_cols: dict[str, dict[int, float]]) -> dict[str, dict[str, float]]:
+        col_names = list(idxed_cols.keys())
         result = {col1: {col2: 0.0 for col2 in col_names if col1 != col2} for col1 in col_names}
 
         for i, col1 in enumerate(col_names):
             for j in range(i+1, len(col_names)):
                 col2 = col_names[j]
-                common_indices = get_keys(indexed_columns, col1, col2)
+                common_indices = get_keys(idxed_cols, col1, col2)
                 if len(common_indices) > 1:
-                    x = [indexed_columns[col1][idx] for idx in common_indices]
-                    y = [indexed_columns[col2][idx] for idx in common_indices]
+                    x = [idxed_cols[col1][idx] for idx in common_indices]
+                    y = [idxed_cols[col2][idx] for idx in common_indices]
 
                     try:
                         corr = np.corrcoef(x, y)[0, 1]
@@ -192,7 +192,7 @@ def is_numeric_valid(value: float) -> bool:
     return isinstance(value, (int, float)) and not np.isnan(value)
 
 
-def filter_numeric_values(columns, remove_nan=True, preserve_indices=False) -> dict | list:
+def filter(columns, remove_nan=True, preserve_indices=False) -> dict | list:
     """
     Filter a column to keep only numeric values (int, float) and optionally remove NaN values
     """
@@ -216,7 +216,7 @@ def describe(dataset: DataFrame) -> None:
     """Generate descriptive statistics for the dataset"""
     results = {}
     for col_name, col in dataset.items():
-        values = filter_numeric_values(col, remove_nan=True)
+        values = filter(col, remove_nan=True)
         # Skip in case of empty column
         if not values:
             continue
