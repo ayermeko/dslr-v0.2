@@ -2,8 +2,13 @@ import numpy as np
 import csv
 import os
 from dataclasses import dataclass, field
-from typing import Any, Optional, List
 from prettytable import PrettyTable
+from typing import (
+    Any, 
+    Optional, 
+    List, 
+    Tuple
+)
 
 @dataclass
 class DataFrame:
@@ -239,3 +244,23 @@ def describe(dataset: DataFrame) -> None:
     
     formatted_output = format_results(results)
     print(formatted_output)
+
+
+def sortout_col(dataset: DataFrame) -> Tuple[list, list]:
+    """
+    Sorts and returns list of column names with
+        1. String(Categorical) data.
+        2. Numerical data.
+    """
+    new_dict = {}
+    categorical_cols = []
+    for col_name, col in dataset.items():
+        if col_name == 'Index':
+            continue
+        threshold = filter(col)
+
+        if len(threshold) > 0:
+            new_dict[col_name] = col
+        else:
+            categorical_cols.append(col_name)
+    return categorical_cols, list(new_dict.keys())

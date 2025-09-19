@@ -1,12 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
+import pandas as pd
 from .operations import (
     is_numeric_valid, 
     min_max, 
     corr, 
     filter, 
     get_keys,
-    extract
+    extract,
+    sortout_col
 )
 
 
@@ -62,14 +65,12 @@ def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
 
 
 def scatterplot(dataset) -> None:
+    _, numerical_keys = sortout_col(dataset)
+    
     idxed_cols = {}
-    for col_name, col in dataset.items():
-        if col_name == 'Index':
-            continue
-        threshold = filter(col)
-        if len(threshold) > 0:
-            idxed_cols[col_name] = filter(col, preserve_indices=True)
-            print(f"'{col_name}' has {len(idxed_cols[col_name])} numeric values")
+    for col_name in numerical_keys:
+        idxed_cols[col_name] = filter(dataset[col_name], preserve_indices=True)
+        print(f"'{col_name}' has {len(idxed_cols[col_name])} numeric values")
 
     corr_matrix = corr(idxed_cols)
 
@@ -109,5 +110,48 @@ def scatterplot(dataset) -> None:
     else:
         print("No valid correlation pairs found")
 
-def pair_plot(dataset):
-    pass
+
+def pair_plot(dataset, features=None, target='Hogwarts House') -> None:
+    cats, all_numerical_keys = sortout_col(dataset)
+
+    df_dict = {}
+    for col_name, col_data in dataset.items():
+        df_dict[col_name] = col_data
+
+    df = pd.DataFrame(df_dict)
+    
+    if features is not None:
+        numerical_cols = [f for f in features if f in all_numerical_keys]
+        if len(numerical_cols) != len(features):
+            raise ValueError("Missing features.")
+    else:
+        numerical_cols = all_numerical_keys
+    
+    if len(numerical_cols) < 2:
+        print(f"Not enough numerical columns for pair plot.")
+        return
+    if target not in cats:
+        print(f"'{target}' is not in Dataset.")
+        return
+
+    plot_cols = numerical_cols + [target]
+    df_subset = df[plot_cols].copy()
+
+    df_subset = df_subset.dropna(subset=[target])
+    df_subset = df_subset.dropna(subset=numerical_cols, how='all')
+    
+    if df_subset.empty:
+        print("No valid data remaining after filtering")
+        return
+    
+    try:
+        graph = sns.pairplot(
+            df_subset, 
+            hue=target,
+            diag_kind='hist',
+        )
+        graph.figure.set_size_inches(10, 6)
+        plt.show()
+    except KeyboardInterrupt:
+        print("Pair plot display was interrupted!")
+    
