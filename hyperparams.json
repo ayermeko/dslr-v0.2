@@ -1,0 +1,19 @@
+{
+    "features": {
+        "Defense Against the Dark Arts": true,
+        "Charms": true,
+        "Herbology": true,
+        "Divination": true,
+        "Muggle Studies": true,
+        "Arithmancy": false,
+        "Astronomy": false,
+        "Ancient Runes": false,
+        "History of Magic": false,
+        "Transfiguration": false,
+        "Potions": false,
+        "Care of Magical Creatures": false,
+        "Flying": false
+    },
+    "learning_rate": 0.01,
+    "max_iterations": 1000
+}
