@@ -1,2 +1,60 @@
-def split_randomize():
-    pass
+import json
+from core.operations import validate
+import pandas as pd
+import numpy as np
+
+def clear_data(filepath: str):
+    with open('hyperparams.json', 'r') as f:
+        hyperparams = json.load(f)
+    
+    # validating arg path, and converting into df form custom
+    # it also reads csv file
+    df = validate(filepath)
+    df_dict = {}
+    for col_name, col_data in df.items():
+        df_dict[col_name] = col_data
+
+    df = pd.DataFrame(df_dict)
+    
+    selected_features = []
+    for feature, is_selected in hyperparams['features'].items():
+        if is_selected:
+            selected_features.append(feature)
+    
+    
+    features_to_keep = ['Hogwarts House'] + selected_features
+    df = df[features_to_keep]
+    
+    df = df.dropna(subset=selected_features)
+    
+    # Extract features and target
+    X = df[selected_features].values.astype(float)
+    y = df.values[:,  0]
+    
+    return X, y
+
+def split_randomize(X, y, test_size=0.3, random_state=42):
+    """Split arrays into random train and test subsets"""
+    if random_state:
+        np.random.seed(random_state)
+    
+    # Get unique classes and their indices
+    unique_classes = np.unique(y)
+    train_indices = []
+    test_indices = []
+    
+    for class_label in unique_classes:
+        # Find all indices for this class
+        class_indices = np.where(y == class_label)[0]
+        np.random.shuffle(class_indices)
+        
+        # Split this class proportionally
+        n_test = int(len(class_indices) * test_size)
+        test_indices.extend(class_indices[:n_test])
+        train_indices.extend(class_indices[n_test:])
+    
+    # Shuffle the final indices
+    np.random.shuffle(train_indices)
+    np.random.shuffle(test_indices)
+    
+    return X[train_indices], X[test_indices], y[train_indices], y[test_indices]
