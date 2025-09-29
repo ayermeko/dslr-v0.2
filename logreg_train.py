@@ -37,7 +37,8 @@ def main():
         X = df[selected_features].values.astype(float)  # Use selected features directly
         y = df.values[:,  0]
         
-        
+        X_train, X_test, y_train, y_test = split_randomize(X, y)
+
     except Exception as e:
         print(f"{type(e).__name__}: {e}")
 
