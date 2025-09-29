@@ -2,7 +2,7 @@ import sys
 import pandas as pd
 import json
 from core.operations import validate
-import numpy as np
+from core.model.preprocessing import split_randomize
 
 def main():
     try:
@@ -37,7 +37,7 @@ def main():
         X = df[selected_features].values.astype(float)  # Use selected features directly
         y = df.values[:,  0]
         
-
+        
     except Exception as e:
         print(f"{type(e).__name__}: {e}")
 
