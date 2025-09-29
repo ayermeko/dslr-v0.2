@@ -38,22 +38,18 @@ def split_randomize(X, y, test_size=0.3, random_state=42):
     if random_state:
         np.random.seed(random_state)
     
-    # Get unique classes and their indices
     unique_classes = np.unique(y)
     train_indices = []
     test_indices = []
     
     for class_label in unique_classes:
-        # Find all indices for this class
         class_indices = np.where(y == class_label)[0]
         np.random.shuffle(class_indices)
         
-        # Split this class proportionally
         n_test = int(len(class_indices) * test_size)
         test_indices.extend(class_indices[:n_test])
         train_indices.extend(class_indices[n_test:])
     
-    # Shuffle the final indices
     np.random.shuffle(train_indices)
     np.random.shuffle(test_indices)
     
