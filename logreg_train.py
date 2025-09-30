@@ -17,7 +17,7 @@ def main():
 
         model.fit(X_train_norm, y_train)
 
-        y_pred = model.predict(X_train_norm)
+        y_pred = model.predict(X_test_norm)
 
         print(f'Misclasified samples: {sum(y_test != y_pred)}')
         print(f'Accuracy: {accuracy_score(y_test, y_pred):.2f}')
