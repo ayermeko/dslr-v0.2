@@ -9,20 +9,24 @@ def main():
             raise ValueError("Usage: missing .csv or arg issue.")        
         X, y = clear_data(filepath=sys.argv[1])
         # loading selected features
-        X_train, X_test, y_train, y_test = split_randomize(X, y)
+        X_train, X_test, y_train, y_test = split_randomize(X, y, test_size=0.3, random_state=42)
 
         model = LogisticRegression()
-        X_train_norm = model.normalize(X_train)
-        X_test_norm = model.normalize(X_test)
 
-        model.fit(X_train_norm, y_train)
+        model.fit_normalize(X_train)
 
-        y_pred = model.predict(X_test_norm)
+        X_train_norm = model.transform(X_train)
+        X_test_norm = model.transform(X_test)
 
-        print(f'Misclasified samples: {sum(y_test != y_pred)}')
-        print(f'Accuracy: {accuracy_score(y_test, y_pred):.2f}')
 
-        model.save_model()
+        # model.fit(X_train_norm, y_train)
+
+        # y_pred = model.predict(X_test_norm)
+
+        # print(f'Misclasified samples: {sum(y_test != y_pred)}')
+        # print(f'Accuracy: {accuracy_score(y_test, y_pred):.2f}')
+
+        # model.save_model()
 
     except Exception as e:
         print(f"{type(e).__name__}: {e}")
