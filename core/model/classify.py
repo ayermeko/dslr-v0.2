@@ -26,8 +26,6 @@ class LogisticRegression:
         return (X - self._mean) / self._std
 
 
-
-
     def fit():
         pass
 

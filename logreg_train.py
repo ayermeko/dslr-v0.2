@@ -19,7 +19,7 @@ def main():
         X_test_norm = model.transform(X_test)
 
 
-        # model.fit(X_train_norm, y_train)
+        model.fit(X_train_norm, y_train)
 
         # y_pred = model.predict(X_test_norm)
 
