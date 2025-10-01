@@ -33,7 +33,7 @@ def clear_data(filepath: str):
     
     return X, y
 
-def split_randomize(X, y, test_size=0.3, random_state=42):
+def split_randomize(X, y, test_size=0.3, random_state=None):
     """Split arrays into random train and test subsets"""
     if random_state:
         np.random.seed(random_state)
