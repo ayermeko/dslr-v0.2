@@ -81,11 +81,13 @@ class LogisticRegression:
             raise ValueError("Must call fit_normalize first!")
         
         self._classes = np.unique(y)
-        print(f"Training classifiers for: {list(self._classes)}")
+        print(self._classes)
         
         for class_name in self._classes:
             y_binary = (y == class_name).astype(int)
-            
+            print(y)
+            print(y_binary)
+
             weights = self._fit_binary_classifier(X, y_binary, class_name)
             self._weights[class_name] = weights
         
