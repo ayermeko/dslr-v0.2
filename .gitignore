@@ -1,2 +1,4 @@
 .venv
 monitor.txt
+core/__pycache__
+core/model/__pycache__
