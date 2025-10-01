@@ -1,4 +1,5 @@
 .venv
 monitor.txt
-core/__pycache__
-core/model/__pycache__
+# Python cache
+__pycache__/
+*.py[cod]
