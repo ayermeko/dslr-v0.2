@@ -21,13 +21,10 @@ def clear_data(filepath: str):
         if is_selected:
             selected_features.append(feature)
     
-    
+
     features_to_keep = ['Hogwarts House'] + selected_features
     df = df[features_to_keep]
-    
     df = df.dropna(subset=selected_features)
-    
-    # Extract features and target
     X = df[selected_features].values.astype(float)
     y = df.values[:,  0]
     

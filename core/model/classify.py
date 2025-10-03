@@ -46,14 +46,11 @@ class LogisticRegression:
         X_with_bias = np.column_stack([np.ones(X.shape[0]), X])
         
         np.random.seed(42)
-        weights = np.random.normal(0, 0.01, X_with_bias.shape[1])
+        weights = np.random.normal(0, 0.01, X_with_bias.shape[1]) # prevening form symmetry issues
         
-        print(f"Training {class_name}...")
-        
-        for iteration in range(self.max_iterations):
+        for _ in range(self.max_iterations):
             z = X_with_bias @ weights
             predictions = self._sigmoid(z)
-            
 
             epsilon = 1e-15
             predictions = np.clip(predictions, epsilon, 1 - epsilon)
@@ -61,24 +58,14 @@ class LogisticRegression:
             
             gradient = X_with_bias.T @ (predictions - y) / len(y)
             
-            new_weights = weights - self.learning_rate * gradient
-            
-            tolerance = 1e-6
-            if np.linalg.norm(new_weights - weights) < tolerance:
-                print(f"  Converged after {iteration + 1} iterations")
-                break
-                
-            weights = new_weights
-            
-            if iteration % 200 == 0:
-                print(f"  Iteration {iteration}, Cost: {cost:.6f}")
+            weights -= self.learning_rate * gradient
         
         return weights
 
     def fit(self, X, y):
         """Fit multiclass logistic regression using One-vs-Rest approach"""
         if not self._is_fitted:
-            raise ValueError("Must call fit_normalize first!")
+            raise ValueError("Must call fit_normalize first")
         
         self._classes = np.unique(y)
         
