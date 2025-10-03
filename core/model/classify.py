@@ -75,8 +75,7 @@ class LogisticRegression:
 
             weights = self._fit_binary_classifier(X, y_binary, class_name)
             self._weights[class_name] = weights
-        
-        print("Training completed!")
+
 
     def predict_proba(self, X):
         """Predict class probabilities"""
@@ -95,12 +94,11 @@ class LogisticRegression:
     def predict(self, X):
         """Predict classes using One-vs-Rest strategy"""
         probabilities = self.predict_proba(X)
-        
+
         prob_array = np.column_stack([probabilities[class_name] for class_name in self._classes])
         
         predicted_indices = np.argmax(prob_array, axis=1)
         predictions = self._classes[predicted_indices]
-        
         return predictions
 
     def save_model(self):
