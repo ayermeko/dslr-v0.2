@@ -54,11 +54,12 @@ class LogisticRegression:
 
             epsilon = 1e-15
             predictions = np.clip(predictions, epsilon, 1 - epsilon)
-            cost = -np.mean(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
             
             gradient = X_with_bias.T @ (predictions - y) / len(y)
-            
             weights -= self.learning_rate * gradient
+            # cost = -np.mean(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
+            # if _ % 200 == 0:
+            #     print(f"  Iteration {_}, Cost: {cost:.6f}")
         
         return weights
 
