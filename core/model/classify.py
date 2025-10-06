@@ -41,11 +41,11 @@ class LogisticRegression:
         z = np.clip(z, -500, 500)
         return 1 / (1 + np.exp(-z))
 
-    def _fit_binary_classifier(self, X, y, class_name):
+    def _fit_binary_classifier(self, X, y, random_stat=None):
         """Fit binary classifier for one class vs all others"""
         X_with_bias = np.column_stack([np.ones(X.shape[0]), X])
         
-        np.random.seed(42)
+        np.random.seed(random_stat)
         weights = np.random.normal(0, 0.01, X_with_bias.shape[1]) # prevening form symmetry issues
         
         for _ in range(self.max_iterations):
@@ -54,7 +54,7 @@ class LogisticRegression:
 
             epsilon = 1e-15
             predictions = np.clip(predictions, epsilon, 1 - epsilon)
-            
+
             gradient = X_with_bias.T @ (predictions - y) / len(y)
             weights -= self.learning_rate * gradient
             # cost = -np.mean(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
@@ -69,11 +69,11 @@ class LogisticRegression:
             raise ValueError("Must call fit_normalize first")
         
         self._classes = np.unique(y)
-        
+
         for class_name in self._classes:
             y_binary = (y == class_name).astype(int)
 
-            weights = self._fit_binary_classifier(X, y_binary, class_name)
+            weights = self._fit_binary_classifier(X, y_binary, random_stat=42)
             self._weights[class_name] = weights
 
 
@@ -102,5 +102,35 @@ class LogisticRegression:
         return predictions
 
     def save_model(self):
-        pass
+        """Save the trained model weights and normalization parameters to a file"""
+        if not self._weights:
+            raise ValueError("Model must be trained before saving!")
+        
+        model_data = {
+            'weights': {class_name: weights.tolist() for class_name, weights in self._weights.items()},
+            'classes': self._classes.tolist(),
+            'mean': self._mean.tolist(),
+            'std': self._std.tolist(),
+            'is_fitted': self._is_fitted
+        }
+        
+        import json
+        with open('weights.json', 'w') as f:
+            json.dump(model_data, f, indent=2)
 
+    def load_model(self, filepath='weights.json'):
+        """Load a previously saved model"""
+        import json
+        import numpy as np
+        
+        with open(filepath, 'r') as f:
+            model_data = json.load(f)
+        
+        self._weights = {class_name: np.array(weights) 
+                        for class_name, weights in model_data['weights'].items()}
+        self._classes = np.array(model_data['classes'])
+        self._mean = np.array(model_data['mean'])
+        self._std = np.array(model_data['std'])
+        self._is_fitted = model_data['is_fitted']
+        
+        print(f"Model loaded from {filepath}")

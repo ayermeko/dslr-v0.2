@@ -25,8 +25,7 @@ def main():
         print(f'Misclasified samples: {sum(y_test != y_pred)}')
         print(f'Accuracy: {accuracy_score(y_test, y_pred):.2f}')
 
-        # model.save_model()
-
+        model.save_model()
     except Exception as e:
         print(f"{type(e).__name__}: {e}")
 
