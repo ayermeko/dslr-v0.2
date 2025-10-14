@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 import numpy as np
 import json
+from core.operations import mean, std
 
 @dataclass
 class LogisticRegression:
@@ -24,8 +25,10 @@ class LogisticRegression:
 
     def fit_normalize(self, X):
         """Learn normalization stats from training data ONCE"""
-        self._mean = np.mean(X, axis=0)
-        self._std = np.std(X, axis=0)
+        # Calculate mean for each column using custom mean function
+        self._mean = np.array([mean(X[:, i]) for i in range(X.shape[1])])
+        # Calculate std for each column using custom std function
+        self._std = np.array([std(X[:, i]) for i in range(X.shape[1])])
         self._std = np.where(self._std == 0, 1, self._std)
         self._is_fitted = True
         return (X - self._mean) / self._std
@@ -41,12 +44,13 @@ class LogisticRegression:
         z = np.clip(z, -500, 500)
         return 1 / (1 + np.exp(-z))
 
-    def _fit_binary_classifier(self, X, y, random_stat=None):
+    def _fit_binary_classifier(self, X, y, random_state=42):
         """Fit binary classifier for one class vs all others"""
         X_with_bias = np.column_stack([np.ones(X.shape[0]), X])
         
-        np.random.seed(random_stat)
-        weights = np.random.normal(0, 0.01, X_with_bias.shape[1]) # prevening form symmetry issues
+        # Set seed for reproducible weight initialization
+        np.random.seed(random_state)
+        weights = np.random.normal(0, 0.01, X_with_bias.shape[1]) # preventing form symmetry issues
         
         for _ in range(self.max_iterations):
             z = X_with_bias @ weights
@@ -73,7 +77,7 @@ class LogisticRegression:
         for class_name in self._classes:
             y_binary = (y == class_name).astype(int)
 
-            weights = self._fit_binary_classifier(X, y_binary, random_stat=42)
+            weights = self._fit_binary_classifier(X, y_binary, random_state=42)
             self._weights[class_name] = weights
 
 

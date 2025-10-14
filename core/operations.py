@@ -136,6 +136,30 @@ def percentile(values, p):
     fraction = idx - lower_idx
     return lower_val + fraction * (upper_val - lower_val)
 
+def correlation_coefficient(x, y):
+    """Calculate Pearson correlation coefficient manually"""
+    if len(x) != len(y):
+        raise ValueError("Arrays must have the same length")
+    
+    n = len(x)
+    if n < 2:
+        return 0.0
+    
+    mean_x = mean(x)
+    mean_y = mean(y)
+    
+    # Calculate numerator and denominators
+    numerator = sum((x[i] - mean_x) * (y[i] - mean_y) for i in range(n))
+    sum_sq_x = sum((x[i] - mean_x) ** 2 for i in range(n))
+    sum_sq_y = sum((y[i] - mean_y) ** 2 for i in range(n))
+    
+    denominator = (sum_sq_x * sum_sq_y) ** 0.5
+    
+    if denominator == 0:
+        return 0.0
+    
+    return numerator / denominator
+
 def get_keys(idxed_cols: dict[str, dict[int, float]], first, second) -> set:
     """To get a common keys form two dicts."""
     return set(idxed_cols[first].keys()) & set(idxed_cols[second].keys())
@@ -157,10 +181,10 @@ def corr(idxed_cols: dict[str, dict[int, float]]) -> dict[str, dict[str, float]]
                     y = extract(idxed_cols[col2], common_indices)
 
                     try:
-                        corr = np.corrcoef(x, y)[0, 1]
-                        if not np.isnan(corr):
-                            result[col1][col2] = corr
-                            result[col2][col1] = corr
+                        corr_val = correlation_coefficient(x, y)
+                        if not np.isnan(corr_val):
+                            result[col1][col2] = corr_val
+                            result[col2][col1] = corr_val
                     except:
                         raise ValueError("Failed to calculate corr cofficinet")
         return result

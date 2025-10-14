@@ -9,7 +9,7 @@ def main():
             raise ValueError("Usage: missing .csv or arg issue.")        
         X, y = clear_data(filepath=sys.argv[1])
         # loading selected features
-        X_train, X_test, y_train, y_test = split_randomize(X, y, test_size=0.2)
+        X_train, X_test, y_train, y_test = split_randomize(X, y, test_size=0.2, random_state=42)
 
         model = LogisticRegression()
 
