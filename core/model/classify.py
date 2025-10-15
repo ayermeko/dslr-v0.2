@@ -11,7 +11,6 @@ class LogisticRegression:
     _weights: dict = field(default_factory=dict, init=False)
     _classes: np.ndarray = field(default_factory=lambda: np.array([]), init=False)
     
-    # Hyperparameters
     learning_rate: float = field(init=False)
     max_iterations: int = field(init=False)
 
@@ -24,31 +23,25 @@ class LogisticRegression:
         self.max_iterations = hyperparams['max_iterations']
 
     def fit_normalize(self, X):
-        """Learn normalization stats from training data ONCE"""
-        # Calculate mean for each column using custom mean function
         self._mean = np.array([mean(X[:, i]) for i in range(X.shape[1])])
-        # Calculate std for each column using custom std function
         self._std = np.array([std(X[:, i]) for i in range(X.shape[1])])
         self._std = np.where(self._std == 0, 1, self._std)
         self._is_fitted = True
         return (X - self._mean) / self._std
 
     def transform(self, X):
-        """Apply SAME normalization to any data"""
         if not self._is_fitted:
             raise ValueError("Must call fit_normalize first!")
         return (X - self._mean) / self._std
 
     def _sigmoid(self, z):
-        """Sigmoid activation function with overflow protection"""
+        """sigmoid activation"""
         z = np.clip(z, -500, 500)
         return 1 / (1 + np.exp(-z))
 
     def _fit_binary_classifier(self, X, y, random_state=42):
-        """Fit binary classifier for one class vs all others"""
         X_with_bias = np.column_stack([np.ones(X.shape[0]), X])
         
-        # Set seed for reproducible weight initialization
         np.random.seed(random_state)
         weights = np.random.normal(0, 0.01, X_with_bias.shape[1]) # preventing form symmetry issues
         
@@ -68,7 +61,6 @@ class LogisticRegression:
         return weights
 
     def fit(self, X, y):
-        """Fit multiclass logistic regression using One-vs-Rest approach"""
         if not self._is_fitted:
             raise ValueError("Must call fit_normalize first")
         
