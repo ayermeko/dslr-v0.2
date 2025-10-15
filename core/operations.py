@@ -17,11 +17,11 @@ class DataFrame:
     data: Any
     columns: Optional[List[str]] = field(default_factory=list)
 
-    def __init__(self, data, columns=None):
-        self.data = np.array(data, dtype=object)
-        self.columns = columns
+    def __post_init__(self):
+        self.data = np.array(self.data, dtype=object)
+        if self.columns is None:
+            self.columns = []
 
-        
     def __getitem__(self, key):
         """Allow column access with df['column_name']"""
         if isinstance(key, str):
@@ -210,8 +210,8 @@ def format_results(results: dict[str, dict[str, float]]) -> str:
 
     table = PrettyTable()
     table.field_names = [""] + adjusted_col_names
-    
-    for stat in results[adjusted_col_names[1]].keys():
+
+    for stat in results[original_col_names[0]].keys():
         row = [stat]
         for adjusted_col in adjusted_col_names:
             original_col = name_mapping[adjusted_col]
@@ -265,7 +265,6 @@ def describe(dataset: DataFrame) -> None:
             "75%": percentile(values, 75),
             "Max": min_max(values, find="max")
         }
-    
     formatted_output = format_results(results)
     print(formatted_output)
 

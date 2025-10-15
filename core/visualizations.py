@@ -66,6 +66,7 @@ def histo(df, subject="Care of Magical Creatures", freq="Best Hand", bins=100):
 
 def scatterplot(dataset) -> None:
     _, numerical_keys = sortout_col(dataset)
+
     
     idxed_cols = {}
     for col_name in numerical_keys:
