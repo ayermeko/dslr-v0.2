@@ -2,13 +2,35 @@ import sys
 import pandas as pd
 from core.model.preprocessing import clear_data
 from core.model.classify import LogisticRegression
+import json
+
+
+def bye_data(filepath: str):
+    with open('hyperparams.json', 'r') as f:
+        hyperparams = json.load(f)
+    
+    df = pd.read_csv(filepath)
+    
+    selected_features = []
+    for feature, is_selected in hyperparams['features'].items():
+        if is_selected:
+            selected_features.append(feature)
+    
+
+    features_to_keep = ['Hogwarts House'] + selected_features
+    df = df[features_to_keep]
+    df = df.dropna(subset=selected_features, how="all")
+    X = df[selected_features].values.astype(float)
+    y = df.values[:,  0]
+    
+    return X, y
 
 def main():
     try:
         if len(sys.argv) != 2:
             raise ValueError("Usage: python logreg_predict.py dataset_test.csv")
         
-        X_test, _ = clear_data(filepath=sys.argv[1])
+        X_test, _ = bye_data(filepath=sys.argv[1])
         
         model = LogisticRegression()
         model.load_model('weights.json')

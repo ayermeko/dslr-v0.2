@@ -9,12 +9,7 @@ def clear_data(filepath: str):
     
     # validating arg path, and converting into df form custom
     # it also reads csv file
-    df = validate(filepath)
-    df_dict = {}
-    for col_name, col_data in df.items():
-        df_dict[col_name] = col_data
-
-    df = pd.DataFrame(df_dict)
+    df = pd.read_csv(filepath)
     
     selected_features = []
     for feature, is_selected in hyperparams['features'].items():
