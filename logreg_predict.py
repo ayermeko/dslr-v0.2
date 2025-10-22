@@ -17,20 +17,25 @@ def bye_data(filepath: str):
             selected_features.append(feature)
     
 
-    features_to_keep = ['Hogwarts House'] + selected_features
+    features_to_keep = ['Index'] + selected_features  # Use Index instead of Hogwarts House for test data
     df = df[features_to_keep]
-    df = df.dropna(subset=selected_features, how="all")
-    X = df[selected_features].values.astype(float)
-    y = df.values[:,  0]
     
-    return X, y
+    # Fill missing values with median instead of dropping rows
+    for feature in selected_features:
+        median_val = df[feature].median()
+        df[feature] = df[feature].fillna(median_val)
+    
+    X = df[selected_features].values.astype(float)
+    indices = df['Index'].values
+    
+    return X, indices
 
 def main():
     try:
         if len(sys.argv) != 2:
             raise ValueError("Usage: python logreg_predict.py dataset_test.csv")
         
-        X_test, _ = bye_data(filepath=sys.argv[1])
+        X_test, indices = bye_data(filepath=sys.argv[1])
         
         model = LogisticRegression()
         model.load_model('weights.json')
@@ -40,7 +45,7 @@ def main():
         
         # create output DataFrame with required format
         output_df = pd.DataFrame({
-            'Index': range(len(predictions)),
+            'Index': indices.astype(int),
             'Hogwarts House': predictions
         })
         output_df.to_csv('houses.csv', index=False)

@@ -5,15 +5,16 @@
         "Herbology": true,
         "Divination": true,
         "Muggle Studies": true,
-        "Arithmancy": false,
+        "Arithmancy": true,
         "Astronomy": false,
         "Ancient Runes": false,
         "History of Magic": false,
-        "Transfiguration": false,
-        "Potions": false,
+        "Transfiguration": true,
+        "Potions": true,
         "Care of Magical Creatures": false,
         "Flying": false
     },
-    "learning_rate": 0.005,
-    "max_iterations": 5000
+    "learning_rate": 0.01,
+    "max_iterations": 8000,
+    "regularization": 0.001
 }

@@ -13,6 +13,7 @@ class LogisticRegression:
     
     learning_rate: float = field(init=False)
     max_iterations: int = field(init=False)
+    regularization: float = field(init=False)
 
     def __post_init__(self):
         """Load hyperparameters from config file"""
@@ -21,6 +22,7 @@ class LogisticRegression:
         
         self.learning_rate = hyperparams['learning_rate']
         self.max_iterations = hyperparams['max_iterations']
+        self.regularization = hyperparams.get('regularization', 0.01)
 
     def fit_normalize(self, X):
         self._mean = np.array([mean(X[:, i]) for i in range(X.shape[1])])
@@ -53,6 +55,9 @@ class LogisticRegression:
             predictions = np.clip(predictions, epsilon, 1 - epsilon)
 
             gradient = X_with_bias.T @ (predictions - y) / len(y)
+            # Add L2 regularization (excluding bias term)
+            l2_penalty = np.concatenate([[0], weights[1:] * self.regularization])
+            gradient += l2_penalty / len(y)
             weights -= self.learning_rate * gradient
             # cost = -np.mean(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
             # if _ % 200 == 0:
@@ -66,10 +71,10 @@ class LogisticRegression:
         
         self._classes = np.unique(y)
 
-        for class_name in self._classes:
+        for i, class_name in enumerate(self._classes):
             y_binary = (y == class_name).astype(int)
 
-            weights = self._fit_binary_classifier(X, y_binary, random_state=42)
+            weights = self._fit_binary_classifier(X, y_binary, random_state=42+i)
             self._weights[class_name] = weights
 
 
