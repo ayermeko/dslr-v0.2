@@ -74,7 +74,7 @@ class LogisticRegression:
         for i, class_name in enumerate(self._classes):
             y_binary = (y == class_name).astype(int)
 
-            weights = self._fit_binary_classifier(X, y_binary, random_state=42+i)
+            weights = self._fit_binary_classifier(X, y_binary, random_state=None)
             self._weights[class_name] = weights
 
 
