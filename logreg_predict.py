@@ -1,6 +1,5 @@
 import sys
 import pandas as pd
-from core.model.preprocessing import clear_data
 from core.model.classify import LogisticRegression
 import json
 
@@ -17,7 +16,7 @@ def bye_data(filepath: str):
             selected_features.append(feature)
     
 
-    features_to_keep = ['Index'] + selected_features  # Use Index instead of Hogwarts House for test data
+    features_to_keep = ['Index'] + selected_features
     df = df[features_to_keep]
     
     # Fill missing values with median instead of dropping rows
@@ -43,13 +42,12 @@ def main():
         X_test_norm = model.transform(X_test)
         predictions = model.predict(X_test_norm)
         
-        # create output DataFrame with required format
         output_df = pd.DataFrame({
             'Index': indices.astype(int),
             'Hogwarts House': predictions
         })
         output_df.to_csv('houses.csv', index=False)
-        print(f"Predictions saved to houses.csv ({len(predictions)} samples)")
+        print(f"predictions saved to houses.csv")
         
     except Exception as e:
         print(f"{type(e).__name__}: {e}")

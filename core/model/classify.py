@@ -11,6 +11,7 @@ class LogisticRegression:
     _weights: dict = field(default_factory=dict, init=False)
     _classes: np.ndarray = field(default_factory=lambda: np.array([]), init=False)
     
+    # hyperparams
     learning_rate: float = field(init=False)
     max_iterations: int = field(init=False)
     regularization: float = field(init=False)
@@ -54,14 +55,14 @@ class LogisticRegression:
             epsilon = 1e-15
             predictions = np.clip(predictions, epsilon, 1 - epsilon)
 
+            # cost = -np.mean(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
+            # if _ % 200 == 0:
+            #     print(f"  Iteration {_}, Cost: {cost:.6f}")
             gradient = X_with_bias.T @ (predictions - y) / len(y)
             # Add L2 regularization (excluding bias term)
             l2_penalty = np.concatenate([[0], weights[1:] * self.regularization])
             gradient += l2_penalty / len(y)
             weights -= self.learning_rate * gradient
-            # cost = -np.mean(y * np.log(predictions) + (1 - y) * np.log(1 - predictions))
-            # if _ % 200 == 0:
-            #     print(f"  Iteration {_}, Cost: {cost:.6f}")
         
         return weights
 

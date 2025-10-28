@@ -1,14 +1,10 @@
 import json
-from core.operations import validate
 import pandas as pd
 import numpy as np
 
 def clear_data(filepath: str):
     with open('hyperparams.json', 'r') as f:
         hyperparams = json.load(f)
-    
-    # validating arg path, and converting into df form custom
-    # it also reads csv file
     df = pd.read_csv(filepath)
     
     selected_features = []
@@ -32,12 +28,13 @@ def split_randomize(X, y, test_size=0.3, random_state=None):
     
     unique_classes = np.unique(y)
     train_indices = []
-    test_indices = []
-    
+    test_indices = []    
+
     for class_label in unique_classes:
         class_indices = np.where(y == class_label)[0]
-        np.random.shuffle(class_indices)
         
+        np.random.shuffle(class_indices)
+
         n_test = int(len(class_indices) * test_size)
         test_indices.extend(class_indices[:n_test])
         train_indices.extend(class_indices[n_test:])
