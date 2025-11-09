@@ -224,4 +224,4 @@ python logreg_predict.py datasets/dataset_test.csv model_weights.json
 
 ---
 
-**Note**: This implementation prioritizes mathematical understanding and clean gradient descent implementation over using external ML libraries. The focus is on learning the fundamentals of logistic regression and
+**Note**: This implementation prioritizes mathematical understanding and clean gradient descent implementation over using external ML libraries.
